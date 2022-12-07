@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using QuizAPI.Models;
 
 namespace QuizAPI.Controllers
 {
@@ -25,17 +26,23 @@ namespace QuizAPI.Controllers
                 }
             };
 
+        private readonly DataContext context;
 
+        public SuperHeroController(DataContext context)
+        {
+            this.context = context;
+        }
+        
         [HttpGet]
         public async Task<ActionResult<List<SuperHero>>> Get()
         {
-            return Ok(heroes);
+            return Ok(await context.SuperHeroes.ToListAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<SuperHero>> Get(int id)
         {
-            var hero = heroes.Find(h => h.Id == id);
+            var hero = await context.SuperHeroes.FindAsync(id);
             if (hero == null)
             {
                 return BadRequest("Hero not found");
@@ -50,8 +57,10 @@ namespace QuizAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<List<SuperHero>>> AddHero(SuperHero hero)
         {
-            heroes.Add(hero);
-            return Ok(heroes);
+            context.SuperHeroes.Add(hero);
+            await context.SaveChangesAsync();
+
+            return Ok(await context.SuperHeroes.ToListAsync());
 
         }
 

@@ -1,4 +1,4 @@
-﻿namespace QuizAPI
+﻿namespace QuizAPI.Models
 {
     public class SuperHero
     {
